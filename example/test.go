@@ -6,7 +6,7 @@ import (
 
 func main() {
 
-	zaplog := zap_mate.NewLogger("./test.yml", "default")
+	zaplog := zap_mate.NewLogger("./test.yaml", "default")
 
 	zaplog.Info("Hi, body!")
 

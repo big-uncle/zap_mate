@@ -66,16 +66,15 @@ func NewLogger(filename, section string) *zap.Logger {
 		//zapcore.NewMultiWriteSyncer(
 		//
 		//	func() []zapcore.WriteSyncer {
-		//		hook, err := rotatelogs.New(   //不建议使用这个，因为使用了它，效率甚至比logrus差不多甚至还慢
+		//		hook, err := rotatelogs.New(
 		//			logSec.GetString("file-name")+".%Y-%m-%d",
-		//			rotatelogs.WithLinkName(logSec.GetString("file-name")),   //如果设置了linkname.那么就不能和上方重名
+		//			rotatelogs.WithLinkName(logSec.GetString("file-name")),
 		//			rotatelogs.WithMaxAge(time.Hour*24*time.Duration(logSec.GetInt("max-age"))),
 		//			rotatelogs.WithRotationTime(time.Hour*24),
 		//			rotatelogs.WithRotationSize(logSec.GetInt64("max-size")*1024*1024),
 		//			//rotatelogs.WithRotationCount(logSec.GetUint("max-count")),
 		//		)
 		//		if err != nil {
-		//			log.Println("日志启动异常")
 		//			panic(hook)
 		//		}
 		//		writes := []zapcore.WriteSyncer{zapcore.AddSync(hook)}

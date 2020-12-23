@@ -1,4 +1,4 @@
-#日志配置
+#config options
 default:  #logsec,以此区分不同的日志实例，可以给不同功能建立不同的日志实例用以区分
   level: -1 #最低输出日志等级  -1~5：debug,info,warn,error,dpanic,panic,fatal
   stdout: true   #是否输出终端，因为文件是必输项

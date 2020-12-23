@@ -1,4 +1,4 @@
-module zap_mate
+module github.com/big-uncle/zap_mate
 
 go 1.14
 
