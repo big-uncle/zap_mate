@@ -1,0 +1,13 @@
+#日志配置
+default:  #logsec,以此区分不同的日志实例，可以给不同功能建立不同的日志实例用以区分
+  level: -1 #最低输出日志等级  -1~5：debug,info,warn,error,dpanic,panic,fatal
+  stdout: true   #是否输出终端，因为文件是必输项
+  caller: false #是否输出打印的文件和行号
+  encoder: console  #日志信息输出编码，json or console，若不是json 就默认就是console
+  max-age: 11   #历史日志最大存留时间,单位天  -1  表示禁用此项
+  max-count: 100  #历史最大存留个数，若使用rotatelogv2.4.0版本可能不起作用
+  max-size: 1000  #日志切割大小 单位兆Mb
+  file-name: ./log/a.log  #日志文件
+  level-color: false #是否开启日志等级颜色显示，大小写在代码中控制
+  time-format: 2006-01-02 15:04:05 #日志时间显示格式，lumberjack的历史存档不受此限制，rotatelogs历史存档受此限制
+  stack-trace-level: 3  #日志输出堆栈信息的最低级别  与 原生的panic 不冲突
