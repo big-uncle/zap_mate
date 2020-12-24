@@ -11,7 +11,7 @@ import (
 
 //filaname : config files of zap
 //section  : Config options
-func NewLogger(filename, section string) *zap.Logger {
+func NewZapLogger(filename, section string) *zap.Logger {
 
 	config := viper.New()
 	config.SetConfigFile(filename)

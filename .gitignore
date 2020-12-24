@@ -18,3 +18,4 @@ vendor/
 *.exe
 .idea
 .vscode/
+log/
