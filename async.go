@@ -1,17 +1,12 @@
 package zap_mate
 
 import (
+	"fmt"
 	"sync"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
-
-//type logInfo struct { //Async msg
-//	msg    string
-//	fields []zap.Field //这块可能又会导致内存逃逸//判断是否有值 若无值，则不传递该值，大部分不应该有值的
-//	lv     zapcore.Level
-//}
 
 type logEntry struct { //Async msg
 	fields []zap.Field
@@ -54,6 +49,8 @@ func (zml *ZapMateLogger) AsyncFatal(msg string, fields ...zap.Field) {
 
 }
 
+//Note: func setAsync is must be setting on the root node, Otherwise it will cause other errors!
+//Child node cannot affect parent nodes,but child node all feature of extends parent node!
 func (zml *ZapMateLogger) SetAsyncer(chanLen uint) *ZapMateLogger {
 	zml.lock.Lock()
 	defer zml.lock.Unlock()
@@ -62,6 +59,7 @@ func (zml *ZapMateLogger) SetAsyncer(chanLen uint) *ZapMateLogger {
 	}
 	zml.isAsync = true
 	zml.chanLen = chanLen
+	fmt.Println(zml.chanLen)
 	zml.entryChan = make(chan *logEntry, zml.chanLen)
 	logMsgPool = &sync.Pool{
 		New: func() interface{} {
@@ -78,10 +76,11 @@ func (zml *ZapMateLogger) startAsyncLogger() {
 	}
 }
 
-func (zml *ZapMateLogger) Flush() {
-	defer zml.Sync()
+func (zml *ZapMateLogger) Flush() error {
+
 	for len(zml.entryChan) > 0 {
 		zml.asyncWrite()
 	}
 	zml.wg.Wait()
+	return zml.Sync()
 }

@@ -1,8 +1,9 @@
 package example
 
 import (
-	"github.com/big-uncle/zap_mate"
 	"testing"
+
+	"github.com/big-uncle/zap_mate"
 )
 
 func TestCheckFile(t *testing.T) {
@@ -17,12 +18,8 @@ func TestCheckFile(t *testing.T) {
 
 	logger.Flush()
 
-	logger.Warn("Who are you?")
-
 	sugar := logger.Sugar()
 
 	sugar.Error("I am Sugar!")
-
-	sugar.DPanic("How are you?")
 
 }

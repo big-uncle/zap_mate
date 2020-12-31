@@ -29,15 +29,16 @@ If you want to use mate logger:
 	logger.AsyncDebug("Hi, boy!")
 
     logger.AsyncInfo("I am zap_mate!")
+  
+    logger.Info("oh oh oh")
     
     logger.Flush()
 
-   	logger.Warn("Who are you?")
+   	logger.Warn("I am a logger of zap_mate")
 
 	sugar := logger.Sugar()
 
 	sugar.Error("I am Sugar!")
-
-    sugar.DPanic("How are you?")
     
     ```
+  > Note: **`Child node cannot affect parent nodes,but child node all feature of extends parent node!`**
