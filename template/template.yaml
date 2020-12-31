@@ -6,7 +6,7 @@ default:
   max-age: 11   
   max-count: 100  
   max-size: 1000  
-  file-name: ./log/a.log  
+  file-name: ./log/a.asynclog
   level-color: false 
   time-format: 2006-01-02 15:04:05 
   stack-trace-level: 3  

@@ -3,10 +3,11 @@ package zap_mate
 import (
 	"os"
 
+	"gopkg.in/natefinch/lumberjack.v2"
+
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 //filaname : config files of zap
@@ -46,20 +47,22 @@ func NewZapLogger(filename, section string) *zap.Logger {
 		}(),
 
 		zapcore.NewMultiWriteSyncer(
-			func() []zapcore.WriteSyncer {
-				writes := []zapcore.WriteSyncer{zapcore.AddSync(
-					&lumberjack.Logger{
-						Filename:   logSec.GetString("file-name"),
-						MaxSize:    logSec.GetInt("max-size"),
-						MaxBackups: logSec.GetInt("max-count"),
-						MaxAge:     logSec.GetInt("max-age"),
-						Compress:   false,
-						LocalTime:  true,
-					})}
+			func() (writer []zapcore.WriteSyncer) {
+				writer = append(writer,
+					zapcore.AddSync(
+						&lumberjack.Logger{
+							Filename:   logSec.GetString("file-name"),
+							MaxSize:    logSec.GetInt("max-size"),
+							MaxBackups: logSec.GetInt("max-count"),
+							MaxAge:     logSec.GetInt("max-age"),
+							Compress:   false,
+							LocalTime:  true,
+						}),
+				)
 				if logSec.GetBool("stdout") {
-					writes = append(writes, zapcore.AddSync(os.Stdout))
+					writer = append(writer, zapcore.AddSync(os.Stdout))
 				}
-				return writes
+				return writer
 			}()...,
 		),
 		//DISABLE

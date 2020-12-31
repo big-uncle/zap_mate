@@ -1,15 +1,24 @@
 package zap_mate
 
 import (
+	"sync"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-type logInfo struct { //Async msg
-	msg    string
-	fields []zap.Field //这块可能又会导致内存逃逸
-	lv     zapcore.Level
+//type logInfo struct { //Async msg
+//	msg    string
+//	fields []zap.Field //这块可能又会导致内存逃逸//判断是否有值 若无值，则不传递该值，大部分不应该有值的
+//	lv     zapcore.Level
+//}
+
+type logEntry struct { //Async msg
+	fields []zap.Field
+	entry  *zapcore.CheckedEntry
 }
+
+var logMsgPool *sync.Pool
 
 func (zml *ZapMateLogger) AsyncDebug(msg string, fields ...zap.Field) {
 	zml.write(zap.DebugLevel, msg, fields...)
@@ -53,7 +62,12 @@ func (zml *ZapMateLogger) SetAsyncer(chanLen uint) *ZapMateLogger {
 	}
 	zml.isAsync = true
 	zml.chanLen = chanLen
-	zml.msgChan = make(chan logInfo, zml.chanLen)
+	zml.entryChan = make(chan *logEntry, zml.chanLen)
+	logMsgPool = &sync.Pool{
+		New: func() interface{} {
+			return new(logEntry)
+		},
+	}
 	go zml.startAsyncLogger()
 	return zml
 }
@@ -66,7 +80,7 @@ func (zml *ZapMateLogger) startAsyncLogger() {
 
 func (zml *ZapMateLogger) Flush() {
 	defer zml.Sync()
-	for len(zml.msgChan) > 0 {
+	for len(zml.entryChan) > 0 {
 		zml.asyncWrite()
 	}
 	zml.wg.Wait()
