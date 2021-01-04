@@ -20,7 +20,6 @@ func (zml *ZapMateLogger) AsyncDebug(msg string, fields ...zap.Field) {
 
 func (zml *ZapMateLogger) AsyncInfo(msg string, fields ...zap.Field) {
 	zml.write(zap.InfoLevel, msg, fields...)
-
 }
 
 func (zml *ZapMateLogger) AsyncWarn(msg string, fields ...zap.Field) {
