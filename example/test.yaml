@@ -6,8 +6,8 @@ default:  #logsecs
   encoder: console  #encode of log，json or console，default by is console
   max-age: 11   #log files Maximum storage time ,unit: day,  -1 : disable the option
   max-count: 100  #log files Maximum storage num
-  max-size: 100  # log files cut size. uint:Mb
+  max-size: 100  # log files cut size. uint:Mbs
   file-name: ./example/log/test.log  #location of log files
-  level-color: false #log level color,default by capital and color
+  level-color: true #log level color,default by capital and color
   time-format: 2006-01-02 15:04:05.999 #time of layout，The cutting file is invalid for lumberjack
   stack-trace-level: 3  #The lowest level of print stack

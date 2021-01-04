@@ -24,23 +24,20 @@ func NewZapLogger(filename, section string) *zap.Logger {
 	return zap.New(zapcore.NewCore(
 		func() zapcore.Encoder {
 			encoderConfig := zapcore.EncoderConfig{
-				MessageKey:    "msg",
-				LevelKey:      "level",
-				TimeKey:       "time",
-				NameKey:       "logger",
-				CallerKey:     "file",
-				FunctionKey:   "func",
-				StacktraceKey: "stacktrace",
-				LineEnding:    zapcore.DefaultLineEnding,
-				//EncodeLevel:    zapcore.CapitalColorLevelEncoder,
-				//EncodeLevel:    zapcore.LowercaseLevelEncoder,
-				//EncodeLevel:    zapcore.LowercaseColorLevelEncoder,
+				MessageKey:     "msg",
+				LevelKey:       "level",
+				TimeKey:        "time",
+				NameKey:        "logger",
+				CallerKey:      "file",
+				FunctionKey:    "func",
+				StacktraceKey:  "stacktrace",
+				LineEnding:     zapcore.DefaultLineEnding,
 				EncodeLevel:    zapcore.CapitalLevelEncoder,
 				EncodeTime:     zapcore.TimeEncoderOfLayout(logSec.GetString("time-format")),
 				EncodeDuration: zapcore.SecondsDurationEncoder,
 				EncodeCaller:   zapcore.ShortCallerEncoder,
 			}
-			if logSec.GetBool("level-color") { //TODEL
+			if logSec.GetBool("level-color") {
 				encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 			}
 			if logSec.GetString("encoder") == "json" {

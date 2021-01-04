@@ -25,14 +25,16 @@ func main() {
 	//}
 	//go func() {
 	logger = zap_mate.NewZapMateLogger("./example/test.yaml", "default")
-	//logger.SetAsyncer(100000)
+	logger.SetAsyncer(100000)
+	sugar := logger.Sugar()
 	num := 0
 	start := time.Now()
 	for num < 10 {
-		logger.AsyncInfo("Hi , boy!")
+		sugar.AsyncInfof("Hi , boy!")
+		logger.Info("Hi , boy!")
 		num++
 	}
-
+	logger.Flush()
 	log.Printf("TS:[%v]", time.Since(start))
 
 	//}()

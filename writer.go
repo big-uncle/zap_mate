@@ -16,7 +16,7 @@ func (zml *ZapMateLogger) write(lvl zapcore.Level, msg string, fields ...zap.Fie
 			//Point[fmt.Sprintf("%p", le)] = Point[fmt.Sprintf("%p", le)] + 1  //print sync.pool create point count!
 			zml.entryChan <- le
 			zml.wg.Add(1)
-		} else { //if isSync so...
+		} else { //if isSync so...s
 			ce.Write(fields...)
 		}
 	}
