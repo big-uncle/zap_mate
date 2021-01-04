@@ -1,7 +1,6 @@
 package zap_mate
 
 import (
-	"fmt"
 	"sync"
 
 	"go.uber.org/zap"
@@ -59,7 +58,6 @@ func (zml *ZapMateLogger) SetAsyncer(chanLen uint) *ZapMateLogger {
 	}
 	zml.isAsync = true
 	zml.chanLen = chanLen
-	fmt.Println(zml.chanLen)
 	zml.entryChan = make(chan *logEntry, zml.chanLen)
 	logMsgPool = &sync.Pool{
 		New: func() interface{} {
