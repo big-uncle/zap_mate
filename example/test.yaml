@@ -1,7 +1,7 @@
 #config options
 default:  #logsecs
   level: -1 #The lowest level of output log  -1~5：debug,info,warn,error,dpanic,panic,fatal
-  stdout: false   #output to the terminal？  true=1,false=1
+  stdout: true   #output to the terminal  true=1,false=1
   caller: false #file details , true=1,false=1
   encoder: console  #encode of log，json or console，default by is console
   max-age: 11   #log files Maximum storage time ,unit: day,  -1 : disable the option

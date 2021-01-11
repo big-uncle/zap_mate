@@ -6,26 +6,23 @@ import (
 	"go.uber.org/zap"
 )
 
-//type isAsync1 *bool
 type ZapMateLogger struct { //Async ZMLogger
-	lock       *sync.Mutex
-	isAsync    bool
-	entryChan  chan *logEntry
-	signalChan chan string
-	chanLen    uint
-	wg         *sync.WaitGroup
+	lock      *sync.Mutex
+	isAsync   bool
+	entryChan chan *logEntry
+	chanLen   uint
+	wg        *sync.WaitGroup
 	*zap.Logger
 }
 
 func NewZapMateLogger(filename, section string) *ZapMateLogger {
 
 	return &ZapMateLogger{
-		isAsync:    false,
-		lock:       new(sync.Mutex),
-		Logger:     NewZapLogger(filename, section),
-		entryChan:  make(chan *logEntry, 1),
-		signalChan: make(chan string, 1),
-		wg:         new(sync.WaitGroup),
+		isAsync:   false,
+		lock:      new(sync.Mutex),
+		Logger:    NewZapLogger(filename, section),
+		entryChan: make(chan *logEntry, 1),
+		wg:        new(sync.WaitGroup),
 	}
 }
 
