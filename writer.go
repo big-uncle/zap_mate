@@ -11,8 +11,8 @@ func (zml *ZapMateLogger) write(lvl zapcore.Level, msg string, fields ...zap.Fie
 			le := logMsgPool.Get().(*logEntry)
 			le.entry = ce
 			le.fields = fields
-			zml.entryChan <- le
 			zml.wg.Add(1)
+			zml.entryChan <- le
 		} else { //if isSync so...
 			ce.Write(fields...)
 		}
