@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"runtime/pprof"
@@ -39,11 +40,14 @@ func main() {
 
 	logger = zap_mate.NewZapMateLogger("./example/test.yaml", "default")
 
-	logger.SetAsyncer(100000)
+	logger.SetAsyncer(1000)
 
-	http.HandleFunc("/", log)
+	http.HandleFunc("/log", runLog)
 
-	http.ListenAndServe("0.0.0.0:8899", nil)
+	err := http.ListenAndServe("0.0.0.0:8899", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 
 }
 
@@ -53,7 +57,7 @@ func main() {
 
 //go tool pprof -inuse_space -cum -svg http://localhost:8899/debug/pprof/heap > ./Desktop/heap_inuse3.svg
 
-func log(w http.ResponseWriter, r *http.Request) {
+func runLog(w http.ResponseWriter, r *http.Request) {
 
 	sugar := logger.Sugar()
 

@@ -68,16 +68,11 @@ func (zml *ZapMateLogger) SetAsyncer(chanLen uint) *ZapMateLogger {
 }
 
 func (zml *ZapMateLogger) startAsyncLogger() {
-	for {
-		zml.asyncWrite()
-	}
+	zml.asyncWrite()
 }
 
 func (zml *ZapMateLogger) Flush() error {
-
-	for len(zml.entryChan) > 0 {
-		zml.asyncWrite()
-	}
+	zml.flushWrite()
 	zml.wg.Wait()
 	return zml.Sync()
 }

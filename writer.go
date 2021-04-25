@@ -20,10 +20,25 @@ func (zml *ZapMateLogger) write(lvl zapcore.Level, msg string, fields ...zap.Fie
 }
 
 func (zml *ZapMateLogger) asyncWrite() {
-	select {
-	case le := <-zml.entryChan:
-		le.entry.Write(le.fields...)
-		logMsgPool.Put(le) //There must used Sync.Put,to avoid a lot of GC
-		zml.wg.Done()
+	for {
+		select {
+		case le := <-zml.entryChan:
+			le.entry.Write(le.fields...)
+			logMsgPool.Put(le) //There must used Sync.Put,to avoid a lot of GC
+			zml.wg.Done()
+		}
+	}
+}
+
+func (zml *ZapMateLogger) flushWrite() {
+	for {
+		select {
+		case le := <-zml.entryChan:
+			le.entry.Write(le.fields...)
+			logMsgPool.Put(le) //There must used Sync.Put,to avoid a lot of GC
+			zml.wg.Done()
+		default: //if there is no data in the channel,so finsh sync flush and exit
+			return
+		}
 	}
 }
