@@ -47,17 +47,19 @@ func NewZapLogger(filename, section string) *zap.Logger {
 
 		zapcore.NewMultiWriteSyncer(
 			func() (writer []zapcore.WriteSyncer) {
-				writer = append(writer,
-					zapcore.AddSync(
-						&lumberjack.Logger{
-							Filename:   logSec.GetString("file-name"),
-							MaxSize:    logSec.GetInt("max-size"),
-							MaxBackups: logSec.GetInt("max-count"),
-							MaxAge:     logSec.GetInt("max-age"),
-							Compress:   false,
-							LocalTime:  true,
-						}),
-				)
+				if logSec.GetString("file-name")!="" {
+					writer = append(writer,
+						zapcore.AddSync(
+							&lumberjack.Logger{
+								Filename:   logSec.GetString("file-name"),
+								MaxSize:    logSec.GetInt("max-size"),
+								MaxBackups: logSec.GetInt("max-count"),
+								MaxAge:     logSec.GetInt("max-age"),
+								Compress:   false,
+								LocalTime:  true,
+							}),
+					)
+				}
 				if logSec.GetBool("stdout") {
 					writer = append(writer, zapcore.AddSync(os.Stdout))
 				}
