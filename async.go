@@ -8,11 +8,15 @@ import (
 )
 
 type logEntry struct { //Async msg
-	fields []zap.Field
+	fields []zapcore.Field
 	entry  *zapcore.CheckedEntry
 }
 
-var logMsgPool *sync.Pool
+var logMsgPool = &sync.Pool{
+	New: func() interface{} {
+		return new(logEntry)
+	},
+}
 
 func (zml *ZapMateLogger) AsyncDebug(msg string, fields ...zap.Field) {
 	zml.write(zap.DebugLevel, msg, fields...)
@@ -47,8 +51,8 @@ func (zml *ZapMateLogger) AsyncFatal(msg string, fields ...zap.Field) {
 
 }
 
-//Note: func setAsync is must be setting on the root node, Otherwise it will cause other errors!
-//Child node cannot affect parent nodes,but child node all feature of extends parent node!
+// Note: func setAsync is must be setting on the root node, Otherwise it will cause other errors!
+// Child node cannot affect parent nodes,but child node all feature of extends parent node!
 func (zml *ZapMateLogger) SetAsyncer(chanLen uint) *ZapMateLogger {
 	zml.lock.Lock()
 	defer zml.lock.Unlock()
@@ -58,11 +62,6 @@ func (zml *ZapMateLogger) SetAsyncer(chanLen uint) *ZapMateLogger {
 	zml.isAsync = true
 	zml.chanLen = chanLen
 	zml.entryChan = make(chan *logEntry, zml.chanLen)
-	logMsgPool = &sync.Pool{
-		New: func() interface{} {
-			return new(logEntry)
-		},
-	}
 	go zml.startAsyncLogger()
 	return zml
 }

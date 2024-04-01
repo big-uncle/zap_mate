@@ -12,6 +12,7 @@ import (
 const (
 	_oddNumberErrMsg    = "Ignored key without a value."
 	_nonStringKeyErrMsg = "Ignored key-value pairs with non-string keys."
+	_multipleErrMsg     = "Multiple errors without a key."
 )
 
 // Note: base.Logger and sugar.Logger must be same pointer
@@ -27,8 +28,8 @@ func (s *MateSugaredLogger) Desugar() *ZapMateLogger {
 
 }
 
-//Note: func setAsync is must be setting on the root node, Otherwise it will cause other errors!
-//Child node cannot affect parent nodes,but child node all feature of extends parent node!
+// Note: func setAsync is must be setting on the root node, Otherwise it will cause other errors!
+// Child node cannot affect parent nodes,but child node all feature of extends parent node!
 func (s *MateSugaredLogger) Named(name string) *MateSugaredLogger {
 	return &MateSugaredLogger{
 		base:          s.base.Named(name),
@@ -154,23 +155,45 @@ func (s *MateSugaredLogger) sweetenFields(args []interface{}) []zap.Field {
 		return nil
 	}
 
-	fields := make([]zap.Field, 0, len(args))
-	var invalid invalidPairs
+	var (
+		// Allocate enough space for the worst case; if users pass only structured
+		// fields, we shouldn't penalize them with extra allocations.
+		fields    = make([]zap.Field, 0, len(args))
+		invalid   invalidPairs
+		seenError bool
+	)
 
 	for i := 0; i < len(args); {
+		// This is a strongly-typed field. Consume it and move on.
 		if f, ok := args[i].(zap.Field); ok {
 			fields = append(fields, f)
 			i++
 			continue
 		}
 
+		// If it is an error, consume it and move on.
+		if err, ok := args[i].(error); ok {
+			if !seenError {
+				seenError = true
+				fields = append(fields, zap.Error(err))
+			} else {
+				s.base.Error(_multipleErrMsg, zap.Error(err))
+			}
+			i++
+			continue
+		}
+
+		// Make sure this element isn't a dangling key.
 		if i == len(args)-1 {
-			s.base.DPanic(_oddNumberErrMsg, zap.Any("ignored", args[i]))
+			s.base.Error(_oddNumberErrMsg, zap.Any("ignored", args[i]))
 			break
 		}
 
+		// Consume this value and the next, treating them as a key-value pair. If the
+		// key isn't a string, add this pair to the slice of invalid pairs.
 		key, val := args[i], args[i+1]
 		if keyStr, ok := key.(string); !ok {
+			// Subsequent errors are likely, so allocate once up front.
 			if cap(invalid) == 0 {
 				invalid = make(invalidPairs, 0, len(args)/2)
 			}
@@ -181,8 +204,9 @@ func (s *MateSugaredLogger) sweetenFields(args []interface{}) []zap.Field {
 		i += 2
 	}
 
+	// If we encountered any invalid key-value pairs, log an error.
 	if len(invalid) > 0 {
-		s.base.DPanic(_nonStringKeyErrMsg, zap.Array("invalid", invalid))
+		s.base.Error(_nonStringKeyErrMsg, zap.Array("invalid", invalid))
 	}
 	return fields
 }
